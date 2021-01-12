@@ -28,6 +28,10 @@ defined('MOODLE_INTERNAL') || die();
 $string['pluginname'] = 'eLeDia E-Klausur Administration';
 $string['privacy:metadata'] = 'Das eLeDia E-Klausur Administration Block Plugin speichert keine persönlichen Daten.';
 $string['deactivateusers'] = 'Nutzer stilllegen';
+$string['archivaldocuments'] = 'Archivdokumente';
+$string['backtocourse'] = 'Zurück zum Kurs';
 $string['confirmdeactivateusers'] = 'Der Status aller eingeschriebener Teilnehmer/innen des Kurses \'{$a}\' wird auf \'Inaktiv\' gesetzt.';
 $string['noticedeactivateusers'] = 'Der Status aller eingeschriebener Teilnehmer/innen wurde auf \'Inaktiv\' gesetzt.';
+
+
 

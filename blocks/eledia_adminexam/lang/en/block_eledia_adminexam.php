@@ -28,6 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 $string['pluginname'] = 'eLeDia e-exam administration';
 $string['privacy:metadata'] = 'The eLeDia e-exam administration block plugin does not store any personal data.';
 $string['deactivateusers'] = 'Deactivate users';
+$string['archivaldocuments'] = 'Archival documents';
+$string['backtocourse'] = 'Back to the course';
 $string['confirmdeactivateusers'] = 'The status of all enrolled participants in the course \'{$a}\' is set to \'Inactive\'.';
 $string['noticedeactivateusers'] = 'The status of all enrolled participants was set to \'Inactive\'';
 

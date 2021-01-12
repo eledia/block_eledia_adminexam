@@ -29,12 +29,14 @@
  * @copyright  2021 René Hansen <support@eledia.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class block_eledia_adminexam extends block_base {
+class block_eledia_adminexam extends block_base
+{
 
     /**
      * Initializes class member variables.
      */
-    public function init() {
+    public function init()
+    {
         // Needed by Moodle to differentiate between blocks.
         $this->title = get_string('pluginname', 'block_eledia_adminexam');
     }
@@ -44,7 +46,8 @@ class block_eledia_adminexam extends block_base {
      *
      * @return stdClass The block contents.
      */
-    public function get_content() {
+    public function get_content()
+    {
 
         if ($this->content !== null) {
             return $this->content;
@@ -67,7 +70,12 @@ class block_eledia_adminexam extends block_base {
             if (has_capability('moodle/site:config', context_system::instance())) {
                 $strdeactivateusersbutton = get_string('deactivateusers', 'block_eledia_adminexam');
                 $deactivateusersurl = new \moodle_url('/blocks/eledia_adminexam/deactivateusers.php', array('courseid' => $this->page->course->id));
-                $text = html_writer::link($deactivateusersurl, $strdeactivateusersbutton, array('class' => 'btn btn-primary w-100'));
+                $text = html_writer::link($deactivateusersurl, $strdeactivateusersbutton, array('class' => 'btn btn-primary w-100 mb-2'));
+
+                $strdeactivateusersbutton = get_string('archivaldocuments', 'block_eledia_adminexam');
+                $deactivateusersurl = new \moodle_url('/blocks/eledia_adminexam/fileman', array('courseid' => $this->page->course->id));
+                $text .= html_writer::link($deactivateusersurl, $strdeactivateusersbutton, array('class' => 'btn btn-primary w-100 mb-2'));
+
             }
             $this->content->text = $text;
         }
