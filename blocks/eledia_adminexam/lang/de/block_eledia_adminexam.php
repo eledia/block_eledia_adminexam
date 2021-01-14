@@ -30,8 +30,11 @@ $string['privacy:metadata'] = 'Das eLeDia E-Klausur Administration Block Plugin 
 $string['deactivateusers'] = 'Nutzer stilllegen';
 $string['archivaldocuments'] = 'Archivdokumente';
 $string['backtocourse'] = 'Zurück zum Kurs';
-$string['confirmdeactivateusers'] = 'Der Status aller eingeschriebener Teilnehmer/innen des Kurses \'{$a}\' wird auf \'Inaktiv\' gesetzt.';
-$string['noticedeactivateusers'] = 'Der Status aller eingeschriebener Teilnehmer/innen wurde auf \'Inaktiv\' gesetzt.';
+$string['confirmdeactivateusers'] = 'Der Status der eingeschriebener Teilnehmer/innen des Kurses \'{$a->course}\' ausschließlich mit der Rolle \'{$a->roles}\' wird auf \'Inaktiv\' gesetzt.';
+$string['noticedeactivateusers'] = 'Der Status der eingeschriebener Teilnehmer/innen des Kurses \'{$a->course}\' ausschließlich mit der Rolle \'{$a->roles}\' wurde auf \'Inaktiv\' gesetzt.';
+$string['configure_description'] = 'Hier können Sie die E-Klausur Administration konfigurieren.';
+$string['deactivateusers_roles_title'] = 'Rolle für \'Nutzer stilllegen\'';
+$string['deactivateusers_roles'] = 'Ausschließlich für eingeschriebener Teilnehmer/innen des Kurses mit diesen Rollen wird der Status auf \'Inaktiv\' gesetzt. Bei den Teilnehmer/innen, die zusätzlich eine andere Rolle auf Kurs- oder Systemebene haben, oder Administrator/innen sind, bleibt der Status unverändert';
 
 
 

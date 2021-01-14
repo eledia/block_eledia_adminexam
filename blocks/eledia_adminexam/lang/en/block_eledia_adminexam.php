@@ -30,6 +30,8 @@ $string['privacy:metadata'] = 'The eLeDia e-exam administration block plugin doe
 $string['deactivateusers'] = 'Deactivate users';
 $string['archivaldocuments'] = 'Archival documents';
 $string['backtocourse'] = 'Back to the course';
-$string['confirmdeactivateusers'] = 'The status of all enrolled participants in the course \'{$a}\' is set to \'Inactive\'.';
-$string['noticedeactivateusers'] = 'The status of all enrolled participants was set to \'Inactive\'';
-
+$string['confirmdeactivateusers'] = 'The status of enrolled participants in the course \'{$a->course}\' exclusively with the role \'{$a->roles}\' is set to \'Inactive\'.';
+$string['noticedeactivateusers'] = 'The status of enrolled participants in the course \'{$a->course}\' exclusively with the role \'{$a->roles}\' was set to \'Inactive\'.';
+$string['configure_description'] = 'Here you can configure the e-exam administration.';
+$string['deactivateusers_roles_title'] = 'Role for \'Deactivate users\'';
+$string['deactivateusers_roles'] ='The status is set to \'Inactive\' only for enrolled participants in the course with these roles. If the participant also has a different role at course or system level or is administrator, the status remains unchanged.';

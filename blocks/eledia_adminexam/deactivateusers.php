@@ -22,7 +22,7 @@
 
 require('../../config.php');
 
-global $USER, $CFG, $PAGE,$OUTPUT, $DB;
+global $USER, $CFG, $PAGE, $OUTPUT, $DB;
 require_once($CFG->dirroot . '/enrol/externallib.php');
 $context = context_system::instance();
 
@@ -33,7 +33,12 @@ if (!has_capability('moodle/site:config', $context)) {
 }
 
 $courseid = required_param('courseid', PARAM_INT);
-$deactivate = optional_param('deactivate', 0,PARAM_INT);
+$course = $DB->get_record('course', array('id' => $courseid), 'fullname', MUST_EXIST);
+$deactivate = optional_param('deactivate', 0, PARAM_INT);
+
+$coursecontext = context_course::instance($courseid);
+$config = get_config('block_eledia_adminexam');
+$configdeactivateuserroles = explode(',', $config->deactivateusers_roles);
 
 $PAGE->set_context($context);
 
@@ -45,7 +50,7 @@ $PAGE->set_title(get_string('deactivateusers', 'block_eledia_adminexam'));
 $PAGE->set_pagelayout('standard');
 
 
-if($deactivate){
+if ($deactivate) {
     $enroledusers = core_enrol_external::get_enrolled_users($courseid, array(array('name' => 'onlyactive', 'value' => true)));
 
     $enrolinstances = enrol_get_instances($courseid, true);
@@ -53,33 +58,33 @@ if($deactivate){
     foreach ($enrolinstances as $courseenrolinstance) {
         $plugin = enrol_get_plugin($courseenrolinstance->enrol);
         foreach ($enroledusers as $enroleduser) {
-            $plugin->update_user_enrol($courseenrolinstance, $enroleduser['id'], ENROL_USER_SUSPENDED);
+            $roles = array_column(get_user_roles($coursecontext, $enroleduser['id'], true), 'shortname');
+
+            if (!is_siteadmin($enroleduser['id'])
+                && (count(array_diff(array_unique(array_merge($configdeactivateuserroles, $roles)), $configdeactivateuserroles)) === 0)) {
+                $plugin->update_user_enrol($courseenrolinstance, $enroleduser['id'], ENROL_USER_SUSPENDED);
+            }
         }
     }
     echo $OUTPUT->header();
 
     echo $OUTPUT->box_start('generalbox');
-    notice('<div style="text-align:center">'.get_string('noticedeactivateusers', 'block_eledia_adminexam').'</div>', new moodle_url('/course/view.php', array('id' => $courseid)));
+    notice('<div style="text-align:center">'
+        . get_string('noticedeactivateusers', 'block_eledia_adminexam',
+            ['course' => $course->fullname, 'roles' => $config->deactivateusers_roles])
+        . '</div>', new moodle_url('/course/view.php', array('id' => $courseid)));
 
 } else {
-   // echo $OUTPUT->header();
-   // echo $OUTPUT->heading($title);
-    $course=$DB->get_record('course', array('id'=>$courseid),'fullname', MUST_EXIST);
 
-    $message=get_string('confirmdeactivateusers', 'block_eledia_adminexam', $course->fullname);
+    $message = get_string('confirmdeactivateusers', 'block_eledia_adminexam'
+        , ['course' => $course->fullname, 'roles' => $config->deactivateusers_roles]);
     echo $OUTPUT->header();
 
     echo $OUTPUT->box_start('generalbox');
-    echo $OUTPUT->confirm($message, $PAGE->url.'&deactivate=1', new moodle_url('/course/view.php', array('id' => $courseid)));
-    //echo $OUTPUT->footer();
-
+    echo $OUTPUT->confirm($message, $PAGE->url . '&deactivate=1', new moodle_url('/course/view.php', array('id' => $courseid)));
 
 }
 
 echo $OUTPUT->box_end();
 
-
 echo $OUTPUT->footer();
-
-
-
