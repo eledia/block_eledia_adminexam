@@ -35,3 +35,11 @@ $string['noticedeactivateusers'] = 'The status of enrolled participants in the c
 $string['configure_description'] = 'Here you can configure the e-exam administration.';
 $string['deactivateusers_roles_title'] = 'Role for \'Deactivate users\'';
 $string['deactivateusers_roles'] ='The status is set to \'Inactive\' only for enrolled participants in the course with these roles. If the participant also has a different role at course or system level or is administrator, the status remains unchanged.';
+$string['loggedquestionsteps'] = 'Logged question steps';
+$string['configurablereportsid_questionsteps'] = 'ID for logged question steps';
+$string['configurablereportsid_questionsteps_desc'] = 'Please enter the ID of the configurable report in which the logged steps of the questions are displayed.';
+$string['createlabels'] = 'Create labels';
+$string['confirmcreatelabels'] = 'The printable labels as PDF files will be downloaded for \'{$a->course}\'';
+$string['noticecreatelabels'] = 'The printable labels as a PDF file have been downloaded for \'{$a->course}\'';
+$string['pdfsubject'] = 'Labels';
+

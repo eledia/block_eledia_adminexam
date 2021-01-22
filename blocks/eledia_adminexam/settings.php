@@ -28,6 +28,10 @@ if ($ADMIN->fulltree) {
             ['student'],
         $roleoptions);
 
+    $configs[] = new admin_setting_configtext('configurablereportsid_questionsteps',
+        new lang_string('configurablereportsid_questionsteps', 'block_eledia_adminexam'),
+        new lang_string('configurablereportsid_questionsteps_desc', 'block_eledia_adminexam'), 3, PARAM_INT);
+
     foreach ($configs as $config) {
         $config->plugin = 'block_eledia_adminexam';
         $settings->add($config);

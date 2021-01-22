@@ -48,6 +48,7 @@ class block_eledia_adminexam extends block_base
      */
     public function get_content()
     {
+        $config = get_config('block_eledia_adminexam');
 
         if ($this->content !== null) {
             return $this->content;
@@ -76,6 +77,18 @@ class block_eledia_adminexam extends block_base
                 $deactivateusersurl = new \moodle_url('/blocks/eledia_adminexam/fileman', array('courseid' => $this->page->course->id));
                 $text .= html_writer::link($deactivateusersurl, $strdeactivateusersbutton, array('class' => 'btn btn-primary w-100 mb-2'));
 
+                $struploadusersbutton = get_string('uploadusers', 'tool_uploaduser');
+                $uploadusersurl = new \moodle_url('/admin/tool/uploaduser/index.php');
+                $text .= html_writer::link($uploadusersurl, $struploadusersbutton, array('class' => 'btn btn-primary w-100 mb-2'));
+
+                $strloggedquestionstepsbutton = get_string('loggedquestionsteps', 'block_eledia_adminexam');
+                $loggedquestionstepsurl = new \moodle_url('/blocks/configurable_reports/viewreport.php',
+                    array('id'=>$config->configurablereportsid_questionsteps, 'courseid' => $this->page->course->id));
+                $text .= html_writer::link($loggedquestionstepsurl, $strloggedquestionstepsbutton, array('class' => 'btn btn-primary w-100 mb-2'));
+
+                $strcreatelabelsbutton = get_string('createlabels', 'block_eledia_adminexam');
+                $createlabelsurl = new \moodle_url('/blocks/eledia_adminexam/createlabels.php', array('courseid' => $this->page->course->id));
+                $text .= html_writer::link($createlabelsurl, $strcreatelabelsbutton, array('class' => 'btn btn-primary w-100 mb-2'));
             }
             $this->content->text = $text;
         }

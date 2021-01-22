@@ -35,6 +35,16 @@ $string['noticedeactivateusers'] = 'Der Status der eingeschriebener Teilnehmer/i
 $string['configure_description'] = 'Hier können Sie die E-Klausur Administration konfigurieren.';
 $string['deactivateusers_roles_title'] = 'Rolle für \'Nutzer stilllegen\'';
 $string['deactivateusers_roles'] = 'Ausschließlich für eingeschriebener Teilnehmer/innen des Kurses mit diesen Rollen wird der Status auf \'Inaktiv\' gesetzt. Bei den Teilnehmer/innen, die zusätzlich eine andere Rolle auf Kurs- oder Systemebene haben, oder Administrator/innen sind, bleibt der Status unverändert';
+$string['loggedquestionsteps'] = 'Protokollierte Frageschritte';
+$string['configurablereportsid_questionsteps'] = 'ID für Protokollierte Frageschritte';
+$string['configurablereportsid_questionsteps_desc'] = 'Bitte geben Sie die ID des konfigurierbaren Berichts ein, in dem die protokollierten Schritte der Fragen angezeigt werden.';
+$string['createlabels'] = 'Etiketten erzeugen';
+$string['confirmcreatelabels'] = 'Die druckbaren Etiketten als PDF-Datei werden heruntergeladen für \'{$a->course}\'';
+$string['noticecreatelabels'] = 'Die druckbaren Etiketten als PDF-Datei wurden heruntergeladen für \'{$a->course}\'';
+$string['pdfsubject'] = 'Etiketten';
+
+
+
 
 
 
