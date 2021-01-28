@@ -42,6 +42,11 @@ $string['createlabels'] = 'Etiketten erzeugen';
 $string['confirmcreatelabels'] = 'Die druckbaren Etiketten als PDF-Datei werden heruntergeladen für \'{$a->course}\'';
 $string['noticecreatelabels'] = 'Die druckbaren Etiketten als PDF-Datei wurden heruntergeladen für \'{$a->course}\'';
 $string['pdfsubject'] = 'Etiketten';
+$string['assessment_participationlist'] = 'Erstellung Teilnahmeliste';
+$string['confirmparticipationlist'] = 'Erstellung und Archivierung der Teilnahmeliste als PDF-Datei für \'{$a->course}\'';
+$string['noticeparticipationlist'] = 'Der Erstellungsprozess der Teilnahmeliste für \'{$a->course}\' war erfolgreich.';
+$string['createuser'] = 'Nutzer/in anlegen';
+
 
 
 

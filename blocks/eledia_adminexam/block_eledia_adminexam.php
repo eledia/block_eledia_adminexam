@@ -89,6 +89,14 @@ class block_eledia_adminexam extends block_base
                 $strcreatelabelsbutton = get_string('createlabels', 'block_eledia_adminexam');
                 $createlabelsurl = new \moodle_url('/blocks/eledia_adminexam/createlabels.php', array('courseid' => $this->page->course->id));
                 $text .= html_writer::link($createlabelsurl, $strcreatelabelsbutton, array('class' => 'btn btn-primary w-100 mb-2'));
+
+                $strparticipationlistbutton = get_string('assessment_participationlist', 'block_eledia_adminexam');
+                $participationlisturl = new \moodle_url('/blocks/eledia_adminexam/participationlist.php', array('courseid' => $this->page->course->id));
+                $text .= html_writer::link($participationlisturl, $strparticipationlistbutton, array('class' => 'btn btn-primary w-100 mb-2'));
+
+                $strcreateuserbutton = get_string('createuser', 'block_eledia_adminexam');
+                $createuserurl = new \moodle_url('/user/editadvanced.php?id=-1');
+                $text .= html_writer::link($createuserurl, $strcreateuserbutton, array('class' => 'btn btn-primary w-100 mb-2'));
             }
             $this->content->text = $text;
         }

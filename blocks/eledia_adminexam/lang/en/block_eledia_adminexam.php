@@ -42,4 +42,7 @@ $string['createlabels'] = 'Create labels';
 $string['confirmcreatelabels'] = 'The printable labels as PDF files will be downloaded for \'{$a->course}\'';
 $string['noticecreatelabels'] = 'The printable labels as a PDF file have been downloaded for \'{$a->course}\'';
 $string['pdfsubject'] = 'Labels';
-
+$string['assessment_participationlist'] = 'Creation of a participation list';
+$string['confirmparticipationlist'] = 'Creation and archiving of the participation list as a PDF file for \'{$a->course}\'';
+$string['noticeparticipationlist'] = 'The process of creating the participation list for \'{$a->course}\' was successful.';
+$string['createuser'] = 'Add a new user';

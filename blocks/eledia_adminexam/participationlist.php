@@ -23,7 +23,7 @@
 require('../../config.php');
 
 global $USER, $CFG, $PAGE, $OUTPUT, $DB;
-require_once($CFG->dirroot . '/enrol/externallib.php');
+
 $context = context_system::instance();
 
 require_login();
@@ -33,8 +33,8 @@ if (!has_capability('moodle/site:config', $context)) {
 }
 
 $courseid = required_param('courseid', PARAM_INT);
-$course = $DB->get_record('course', array('id' => $courseid), 'shortname', MUST_EXIST);
-$createlabels = optional_param('createlabels', 0, PARAM_INT);
+$course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
+$participationlist = optional_param('participationlist', 0, PARAM_INT);
 
 $coursecontext = context_course::instance($courseid);
 
@@ -43,29 +43,29 @@ $PAGE->set_context($context);
 $myurl = new \moodle_url($FULLME);
 
 $PAGE->set_url($myurl);
-$PAGE->set_title(get_string('createlabels', 'block_eledia_adminexam'));
+$PAGE->set_title(get_string('assessment_participationlist', 'block_eledia_adminexam'));
 
 $PAGE->set_pagelayout('standard');
 
 
-if ($createlabels) {
+if ($participationlist) {
 
-    block_eledia_adminexam\util::download_labels_pdf($courseid);
+    block_eledia_adminexam\util::save_participationlist_pdf($course);
     echo $OUTPUT->header();
 
     echo $OUTPUT->box_start('generalbox');
     notice('<div style="text-align:center">'
-        . get_string('noticecreatelabels', 'block_eledia_adminexam')
+        . get_string('noticeparticipationlist', 'block_eledia_adminexam', ['course' => $course->shortname])
         . '</div>', new moodle_url('/course/view.php', array('id' => $courseid)));
 
 } else {
 
-    $message = get_string('confirmcreatelabels', 'block_eledia_adminexam'
+    $message = get_string('confirmparticipationlist', 'block_eledia_adminexam'
         , ['course' => $course->shortname]);
     echo $OUTPUT->header();
 
     echo $OUTPUT->box_start('generalbox');
-    echo $OUTPUT->confirm($message, $PAGE->url . '&createlabels=1', new moodle_url('/course/view.php', array('id' => $courseid)));
+    echo $OUTPUT->confirm($message, $PAGE->url . '&participationlist=1', new moodle_url('/course/view.php', array('id' => $courseid)));
 
 }
 
