@@ -24,6 +24,7 @@ require('../../config.php');
 
 global $USER, $CFG, $PAGE, $OUTPUT, $DB;
 require_once($CFG->dirroot . '/enrol/externallib.php');
+require_once('createlabels_form.php');
 $context = context_system::instance();
 
 require_login();
@@ -33,42 +34,65 @@ if (!has_capability('moodle/site:config', $context)) {
 }
 
 $courseid = required_param('courseid', PARAM_INT);
-$course = $DB->get_record('course', array('id' => $courseid), 'shortname', MUST_EXIST);
 $createlabels = optional_param('createlabels', 0, PARAM_INT);
+$noticecreatelabels = optional_param('noticecreatelabels', 0, PARAM_INT);
+$emptylabels = optional_param('emptylabels', 0, PARAM_INT);
+$group = optional_param('group', 0, PARAM_INT);
+$userids = optional_param('userids', 0, PARAM_RAW);
 
-$coursecontext = context_course::instance($courseid);
-
-$PAGE->set_context($context);
 
 $myurl = new \moodle_url($FULLME);
 
 $PAGE->set_url($myurl);
+$PAGE->set_context($context);
 $PAGE->set_title(get_string('createlabels', 'block_eledia_adminexam'));
+$PAGE->set_pagelayout('course');
 
-$PAGE->set_pagelayout('standard');
+$mform = new createlabels_form(null, array('courseid' => $courseid));
 
-
-if ($createlabels) {
-
-    block_eledia_adminexam\util::download_labels_pdf($courseid);
-    echo $OUTPUT->header();
-
-    echo $OUTPUT->box_start('generalbox');
-    notice('<div style="text-align:center">'
-        . get_string('noticecreatelabels', 'block_eledia_adminexam')
-        . '</div>', new moodle_url('/course/view.php', array('id' => $courseid)));
-
+// Execute the form.
+if ($mform->is_cancelled()) {
+    redirect(new moodle_url('/course/view.php', array('id' => $courseid)));
 } else {
 
-    $message = get_string('confirmcreatelabels', 'block_eledia_adminexam'
-        , ['course' => $course->shortname]);
-    echo $OUTPUT->header();
+    $formdata = $mform->get_data();
 
-    echo $OUTPUT->box_start('generalbox');
-    echo $OUTPUT->confirm($message, $PAGE->url . '&createlabels=1', new moodle_url('/course/view.php', array('id' => $courseid)));
+    $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 
+    if ($createlabels) {
+
+        block_eledia_adminexam\util::download_labels_pdf($courseid, $group,$emptylabels,unserialize($userids));
+
+    } else if ($noticecreatelabels) {
+
+        $message = get_string('confirmcreatelabels', 'block_eledia_adminexam'
+            , ['course' => $course->shortname]);
+
+        echo $OUTPUT->header();
+
+        echo $OUTPUT->box_start('generalbox');
+
+        $params = ['createlabels' => 1, 'courseid' => $courseid, 'group' => $group, 'emptylabels' => $emptylabels, 'userids' => serialize($formdata->userids)];
+        $url = new moodle_url($PAGE->url, $params);
+        $downloadbutton = new single_button($url, get_string('download_labels', 'block_eledia_adminexam'), 'post');
+        $cancelbutton = new single_button(new moodle_url('/course/view.php', array('id' => $courseid)), get_string('cancel'),'get');
+        echo $OUTPUT->confirm($message, $downloadbutton, $cancelbutton);
+
+    } else {
+        $groups = groups_get_all_groups($courseid);
+        $options = array();
+        foreach ($groups as $group) {
+            $options[$group->id] = $group->name;
+        }
+        $message = get_string('confirmcreatelabels', 'block_eledia_adminexam'
+            , ['course' => $course->shortname]);
+
+        echo $OUTPUT->header();
+        echo $OUTPUT->box_start('generalbox');
+
+        $mform->display();
+    }
 }
-
 echo $OUTPUT->box_end();
 
 echo $OUTPUT->footer();

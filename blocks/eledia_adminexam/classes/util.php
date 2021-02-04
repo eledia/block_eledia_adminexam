@@ -37,30 +37,61 @@ class util
      * @param array $data labels data.
      * @return string Labels as pdf string.
      */
-    public static function download_labels_pdf($courseid)
+    public static function download_labels_pdf($courseid, $groupid, $emptylabels,$userids)
     {
         global $DB, $CFG;
         require_once("$CFG->libdir/pdflib.php");
         $course = $DB->get_record("course", array("id" => $courseid), '*', MUST_EXIST);
         $coursecontext = \context_course::instance($courseid);
-        $users = get_enrolled_users($coursecontext);
-
-        $content_html =
-            '<h2>' . get_string('pdfsubject', 'block_eledia_adminexam') . '</h2><br><h3>' . $course->shortname . '</h3><br>';
-        foreach ($users as $user) {
-            $roles = array_column(get_user_roles($coursecontext, $user->id, true), 'shortname');
-            if (!is_siteadmin($user->id) && (count(array_diff($roles, ['student']))) === 0) {
-                $content_html .= self::get_labels_content_table($user, $course);
+        //$users = get_enrolled_users($coursecontext);
+        $users=$DB->get_records_list('user', 'id', $userids);
+        $instances = enrol_get_instances($courseid, true);
+        $enrolid = '';
+        foreach ($instances as $instance) {
+            if ($instance->enrol === 'elediamultikeys') {
+                $enrolid = $instance->id;
+                break;
             }
         }
 
+        if (empty($enrolid)) {
+            print_error(' there is no enrol elediamultikeys in this course');
+        }
+        $groups = groups_get_all_groups($course->id);
+        $groupname = $groups[$groupid]->name;
+        $content_html =
+            '<h2>' .get_string('pdfsubject', 'block_eledia_adminexam') . '</h2>
+            <br><h3>Klausur: ' . $course->shortname . ', Gruppe: ' . $groupname . ', ' . date('d.m.Y H:i', time())
+            . '</h3>
+            <div><table cellspacing="0" cellpadding="10" border="1" style="font-weight: bold;">';
+        foreach ($users as $user) {
+            $roles = array_column(get_user_roles($coursecontext, $user->id, true), 'shortname');
+            if (!is_siteadmin($user) && (count(array_diff($roles, ['student']))) === 0) {
+               // $groups = groups_get_all_groups($course->id, $user);
+               // if (array_key_exists($groupid, $groups)) {
+                    $keylist = self::create_keylist($enrolid, 1, $groupid);
+                    $content_html .= self::get_labels_content_table($user, $course, $groupname, $keylist[0]);
+               // }
+            }
+        }
+        $content_html .= '</table></div>';
+
+        if (!empty($emptylabels)) {
+            $content_html .= '<hr><h2>Leere ' . get_string('pdfsubject', 'block_eledia_adminexam')
+                . '</h2><div><table cellspacing="0" cellpadding="10" border="0" style="font-weight: bold;">';
+            $keylist = self::create_keylist($enrolid, $emptylabels, $groupid);
+            for ($i = 0; $i < $emptylabels; $i++) {
+                $content_html .= self::get_labels_content_table(null, $course, $groupname, $keylist[$i]);
+            }
+            $content_html .= '</table></div>';
+        }
         // Create new PDF document.
         $pdf = new \TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
         // Set document information.
         $pdf->SetCreator(PDF_CREATOR);
-        $pdf->SetTitle(get_string('pdfsubject', 'block_eledia_adminexam') . ' ' . $course->shortname);
-        $pdf->SetSubject(get_string('pdfsubject', 'block_eledia_adminexam') . ' ' . $course->shortname);
+        $pdf->SetTitle(get_string('pdfsubject', 'block_eledia_adminexam') . ' ' . $course->shortname . ' Gruppe: ' . $groupname . ' ' . date('d.m.Y H:i', time()));
+        $pdf->SetSubject(get_string('pdfsubject', 'block_eledia_adminexam') . ' ' . $course->shortname . ' Gruppe: ' . $groupname . ' ' . date('d.m.Y H:i', time()));
         $pdf->setPrintHeader(false);
         // set header and footer fonts
 
@@ -77,8 +108,6 @@ class util
         $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
         // set image scale factor
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-        // set font
-        //$pdf->SetFont('helvetica', '', 12);
 
         $pdf->AddPage();
         //$pdf->Image('@' . $img);
@@ -87,12 +116,11 @@ class util
         $pdf->SetFont('helvetica', '', 10);
 
         $pdf->writeHTML($content_html, true, false, true, false, '');
-        $filename = get_string('pdfsubject', 'block_eledia_adminexam') . ' ' . $course->shortname . '.pdf<';
-        //$loc = $CFG->dataroot . '/' . $filename;
+
+        $filename = get_string('pdfsubject', 'block_eledia_adminexam') . '_' . $course->shortname . '_' . $groupname . '_' . date('YmdHis', time()) . '.pdf<';
 
         ob_end_clean();
         $filecontents = $pdf->Output($filename, 'D');
-
         return $filecontents;
     }
 
@@ -102,34 +130,74 @@ class util
      * @param stdClass $user the user.
      * @return string Labels as html string.
      */
-    public static function get_labels_content_table($user, $course)
+    public
+    static function get_labels_content_table($user, $course, $group, $key)
     {
-        for ($password = mt_rand(1, 9), $i = 1; $i < 8; $i++) {
-            $password .= mt_rand(0, 9);
+        $html = '
+        <tr nobr="true"><td style="width: 33%;border:1px solid #333;">';
+        if (!empty($user)) {
+            for ($password = mt_rand(1, 9), $i = 1; $i < 8; $i++) {
+                $password .= mt_rand(0, 9);
+            }
+            update_internal_user_password($user, $password);
+            $html .= '<div>' . $user->lastname . ', ' . $user->firstname . '</div>
+          <div>Passwort: ' . $password . '</div>';
+        } else {
+            $html .= '<div>&nbsp;</div>
+            <div>Passwort:</div>';
         }
 
-        update_internal_user_password($user, $password);
-        $groups = implode(', ', array_column(groups_get_all_groups($course->id, $user->id), 'name'));
-        $html = '<div style="border: solid #333 1px;"><table cellspacing="0" cellpadding="5" border="1">
-        <tr style="font-weight: bold;">
-            <td>' . $user->lastname . ', ' . $user->firstname . '</td>
+        $html .= '</td><td style="width: 33%;border:1px solid #333;"><div>Klausur: ' . $course->shortname . '</div>
+          <div>Vouchercode: ' . $key . '</div>
+        </td>
+         <td  style="width: 33%;border:1px solid #333;">Gruppe: ' . $group . '</td>
         </tr>
-        <tr style="font-weight: bold;">
-            <td>Klausur: ' . $course->shortname . '</td>
-        </tr>
-        <tr style="font-weight: bold;">
-            <td>Moodlezugang: ' . $password . '</td>
-        </tr>
-        <tr style="font-weight: bold;">
-            <td>Vouchercode:</td>
-        </tr>
-        <tr style="font-weight: bold;">
-            <td>Gruppe: ' . $groups . '</td>
-        </tr>
-        </div>
         ';
 
         return $html;
+    }
+
+
+    public
+    static function create_keylist($enrolid, $count, $group)
+    {
+        global $DB, $CFG;
+        require_once($CFG->dirroot . '/blocks/eledia_multikeys/locallib.php');
+        $mk = new \eledia_multikeys_service();
+        $length = 4;
+
+        $keystable = $DB->get_records('block_eledia_multikeys', array('userid' => null));
+        $oldkeys = array();
+        if ($keystable) {
+            foreach ($keystable as $keyraw) {
+                $oldkeys[] = $keyraw->code;
+            }
+        }
+
+        $newkeys = array();
+        for ($i = 0; $i < $count; $i++) {
+            $newkey = $mk->generate_key($newkeys, $oldkeys, null, $count, $length, 0);
+
+            if (!empty($prefix)) {
+                $newkey = $prefix . '_' . $newkey;
+            }
+
+            $newkeys[] = $newkey;
+            $newkeyobj = new \stdClass();
+            $newkeyobj->enrolid = $enrolid;
+            $newkeyobj->code = $newkey;
+            $newkeyobj->userid = null;
+            $newkeyobj->timecreated = time();
+            $newkeyobj->mailedto = ' ';
+            $newkeyobj->groupid = $group;
+
+            $DB->insert_record('block_eledia_multikeys', $newkeyobj);
+        }
+
+        if (count($newkeys) > 0) {
+            return $newkeys;
+        }
+        return false;
     }
 
     /**
@@ -139,7 +207,8 @@ class util
      * @param array $data reminder data.
      * @return string Reminder as pdf string.
      */
-    public static function get_completion_content_pdf($user, $data)
+    public
+    static function get_completion_content_pdf($user, $data)
     {
         global $DB, $CFG;
         require_once("$CFG->libdir/pdflib.php");
@@ -188,7 +257,62 @@ class util
 
     }
 
-    public static function save_participationlist_pdf($course)
+    public
+    static function coursebackup($course)
+    {
+        global $CFG;
+        require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
+
+        $exportdir = get_config('local_quizattemptexport_kassel', 'pdfexportdir');
+
+        if (!is_dir($exportdir)) {
+            throw new \moodle_exception('except_dirmissing', 'local_quizattemptexport_kassel', '', $exportdir);
+        }
+
+        $dirname = $course->id;
+        $path = $exportdir . '/' . $dirname . '/Kurssicherung/';
+
+        if (!is_dir($path) || !is_writable($path)) {
+            if (!mkdir($path, 0777, true)) {
+                throw new \moodle_exception('except_dirnotwritable', 'local_quizattemptexport_kassel', '', $exportdir);
+            }
+        }
+
+        $admin = get_admin();
+        if (!$admin) {
+            throw new \moodle_exception("Error: No admin account was found");
+        }
+
+        $bc = new \backup_controller(\backup::TYPE_1COURSE, $course->id, \backup::FORMAT_MOODLE,
+            \backup::INTERACTIVE_YES, \backup::MODE_GENERAL, $admin->id);
+        // Set the default filename.
+        $format = $bc->get_format();
+        $type = $bc->get_type();
+        $id = $bc->get_id();
+        $users = $bc->get_plan()->get_setting('users')->get_value();
+        $anonymised = $bc->get_plan()->get_setting('anonymize')->get_value();
+        $filename = \backup_plan_dbops::get_default_backup_filename($format, $type, $id, $users, $anonymised);
+        $bc->get_plan()->get_setting('filename')->set_value($filename);
+
+        // Execution.
+        $bc->finish_ui();
+        $bc->execute_plan();
+        $results = $bc->get_results();
+        $file = $results['backup_destination'];; // May be empty if file already moved to target location.
+
+        if ($file) {
+            if ($file->copy_content_to($path . '/' . $filename)) {
+                $file->delete();
+            } else {
+                throw new \moodle_exception("Destination directory does not exist or is not writable. Leaving the backup in the course backup file area.");
+            }
+        }
+
+        $bc->destroy();
+    }
+
+    public
+    static function save_participationlist_pdf($course)
     {
 
         global $CFG;
@@ -212,7 +336,7 @@ class util
             }
         }
 
-        $filename = $course->shortname . '_' . date('YmdHis', time()) . '.pdf';
+        $filename = $course->shortname . '_' . date('YmdHis', time()) . '_Assessment_Teilnahmeliste.pdf';
 
         // Start new PDF, set protection and author field.
         $pdf = new \TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);

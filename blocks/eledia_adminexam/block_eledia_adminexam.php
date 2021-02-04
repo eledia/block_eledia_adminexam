@@ -48,6 +48,7 @@ class block_eledia_adminexam extends block_base
      */
     public function get_content()
     {
+        global $OUTPUT;
         $config = get_config('block_eledia_adminexam');
 
         if ($this->content !== null) {
@@ -94,9 +95,18 @@ class block_eledia_adminexam extends block_base
                 $participationlisturl = new \moodle_url('/blocks/eledia_adminexam/participationlist.php', array('courseid' => $this->page->course->id));
                 $text .= html_writer::link($participationlisturl, $strparticipationlistbutton, array('class' => 'btn btn-primary w-100 mb-2'));
 
+                $strcheckuserbutton = get_string('checkuser', 'block_eledia_adminexam');
+                $checkuserurl = new \moodle_url('/admin/user.php');
+                $text .= html_writer::link($checkuserurl, $strcheckuserbutton, array('class' => 'btn btn-primary w-100 mb-2'));
+
                 $strcreateuserbutton = get_string('createuser', 'block_eledia_adminexam');
                 $createuserurl = new \moodle_url('/user/editadvanced.php?id=-1');
                 $text .= html_writer::link($createuserurl, $strcreateuserbutton, array('class' => 'btn btn-primary w-100 mb-2'));
+
+                $strcoursebackupbutton = get_string('coursebackup', 'block_eledia_adminexam');
+                $coursebackupurl = new \moodle_url('/blocks/eledia_adminexam/coursebackup.php', array('courseid' => $this->page->course->id));
+                $text .= html_writer::link($coursebackupurl, $strcoursebackupbutton, array('class' => 'btn btn-primary w-100 mb-2'));
+
             }
             $this->content->text = $text;
         }

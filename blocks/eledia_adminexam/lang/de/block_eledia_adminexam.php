@@ -45,7 +45,18 @@ $string['pdfsubject'] = 'Etiketten';
 $string['assessment_participationlist'] = 'Erstellung Teilnahmeliste';
 $string['confirmparticipationlist'] = 'Erstellung und Archivierung der Teilnahmeliste als PDF-Datei für \'{$a->course}\'';
 $string['noticeparticipationlist'] = 'Der Erstellungsprozess der Teilnahmeliste für \'{$a->course}\' war erfolgreich.';
+$string['coursebackup'] = 'Kurs-Sicherung';
+$string['confirmcoursebackup'] = 'Erstellung und Archivierung einer Kurs-Sicherung für \'{$a->course}\'';
+$string['noticecoursebackup'] = 'Der Erstellungsprozess einer Kurs-Sicherung für \'{$a->course}\' war erfolgreich.';
 $string['createuser'] = 'Nutzer/in anlegen';
+$string['download_labels'] = 'Etiketten herunterladen (PDF)';
+$string['confirm_header'] = 'Etiketten';
+$string['select_groups'] = 'Kurs-Gruppe: ';
+$string['checkuser'] = 'Nutzer/in prüfen';
+$string['emptylabels'] = 'Anzahl leerer Etiketten';
+
+
+
 
 
 
