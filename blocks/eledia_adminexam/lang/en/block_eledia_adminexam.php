@@ -54,3 +54,4 @@ $string['confirm_header'] = 'Labels';
 $string['select_groups'] = 'Course group:';
 $string['checkuser'] = 'Check user';
 $string['emptylabels'] = 'Number of empty labels';
+$string['uploadusers'] = 'Upload user list';

@@ -70,43 +70,42 @@ class block_eledia_adminexam extends block_base
         } else {
             $text = '';
             if (has_capability('moodle/site:config', context_system::instance())) {
-                $strdeactivateusersbutton = get_string('deactivateusers', 'block_eledia_adminexam');
-                $deactivateusersurl = new \moodle_url('/blocks/eledia_adminexam/deactivateusers.php', array('courseid' => $this->page->course->id));
-                $text = html_writer::link($deactivateusersurl, $strdeactivateusersbutton, array('class' => 'btn btn-primary w-100 mb-2'));
-
-                $strdeactivateusersbutton = get_string('archivaldocuments', 'block_eledia_adminexam');
-                $deactivateusersurl = new \moodle_url('/blocks/eledia_adminexam/fileman', array('courseid' => $this->page->course->id));
-                $text .= html_writer::link($deactivateusersurl, $strdeactivateusersbutton, array('class' => 'btn btn-primary w-100 mb-2'));
-
-                $struploadusersbutton = get_string('uploadusers', 'tool_uploaduser');
+                $struploadusersbutton = get_string('uploadusers', 'block_eledia_adminexam');
                 $uploadusersurl = new \moodle_url('/admin/tool/uploaduser/index.php');
-                $text .= html_writer::link($uploadusersurl, $struploadusersbutton, array('class' => 'btn btn-primary w-100 mb-2'));
-
-                $strloggedquestionstepsbutton = get_string('loggedquestionsteps', 'block_eledia_adminexam');
-                $loggedquestionstepsurl = new \moodle_url('/blocks/configurable_reports/viewreport.php',
-                    array('id'=>$config->configurablereportsid_questionsteps, 'courseid' => $this->page->course->id));
-                $text .= html_writer::link($loggedquestionstepsurl, $strloggedquestionstepsbutton, array('class' => 'btn btn-primary w-100 mb-2'));
+                $text = html_writer::link($uploadusersurl, $struploadusersbutton, array('target' => '_blank','class' => 'btn btn-primary w-100 mb-2'));
 
                 $strcreatelabelsbutton = get_string('createlabels', 'block_eledia_adminexam');
                 $createlabelsurl = new \moodle_url('/blocks/eledia_adminexam/createlabels.php', array('courseid' => $this->page->course->id));
                 $text .= html_writer::link($createlabelsurl, $strcreatelabelsbutton, array('class' => 'btn btn-primary w-100 mb-2'));
 
+                $strcheckuserbutton = get_string('checkuser', 'block_eledia_adminexam');
+                $checkuserurl = new \moodle_url('/admin/user.php');
+                $text .= html_writer::link($checkuserurl, $strcheckuserbutton, array('target' => '_blank','class' => 'btn btn-primary w-100 mb-2'));
+
+                $strcreateuserbutton = get_string('createuser', 'block_eledia_adminexam');
+                $createuserurl = new \moodle_url('/user/editadvanced.php?id=-1');
+                $text .= html_writer::link($createuserurl, $strcreateuserbutton, array('target' => '_blank','class' => 'btn btn-primary w-100 mb-2'));
+
                 $strparticipationlistbutton = get_string('assessment_participationlist', 'block_eledia_adminexam');
                 $participationlisturl = new \moodle_url('/blocks/eledia_adminexam/participationlist.php', array('courseid' => $this->page->course->id));
                 $text .= html_writer::link($participationlisturl, $strparticipationlistbutton, array('class' => 'btn btn-primary w-100 mb-2'));
 
-                $strcheckuserbutton = get_string('checkuser', 'block_eledia_adminexam');
-                $checkuserurl = new \moodle_url('/admin/user.php');
-                $text .= html_writer::link($checkuserurl, $strcheckuserbutton, array('class' => 'btn btn-primary w-100 mb-2'));
+                $strdeactivateusersbutton = get_string('archivaldocuments', 'block_eledia_adminexam');
+                $deactivateusersurl = new \moodle_url('/blocks/eledia_adminexam/fileman', array('courseid' => $this->page->course->id));
+                $text .= html_writer::link($deactivateusersurl, $strdeactivateusersbutton, array('target' => '_blank','class' => 'btn btn-primary w-100 mb-2'));
 
-                $strcreateuserbutton = get_string('createuser', 'block_eledia_adminexam');
-                $createuserurl = new \moodle_url('/user/editadvanced.php?id=-1');
-                $text .= html_writer::link($createuserurl, $strcreateuserbutton, array('class' => 'btn btn-primary w-100 mb-2'));
+                $strdeactivateusersbutton = get_string('deactivateusers', 'block_eledia_adminexam');
+                $deactivateusersurl = new \moodle_url('/blocks/eledia_adminexam/deactivateusers.php', array('courseid' => $this->page->course->id));
+                $text .= html_writer::link($deactivateusersurl, $strdeactivateusersbutton, array('class' => 'btn btn-primary w-100 mb-2'));
 
                 $strcoursebackupbutton = get_string('coursebackup', 'block_eledia_adminexam');
                 $coursebackupurl = new \moodle_url('/blocks/eledia_adminexam/coursebackup.php', array('courseid' => $this->page->course->id));
                 $text .= html_writer::link($coursebackupurl, $strcoursebackupbutton, array('class' => 'btn btn-primary w-100 mb-2'));
 
+                $strloggedquestionstepsbutton = get_string('loggedquestionsteps', 'block_eledia_adminexam');
+                $loggedquestionstepsurl = new \moodle_url('/blocks/configurable_reports/viewreport.php',
+                    array('id'=>$config->configurablereportsid_questionsteps, 'courseid' => $this->page->course->id));
+                $text .= html_writer::link($loggedquestionstepsurl, $strloggedquestionstepsbutton, array('class' => 'btn btn-primary w-100 mb-2'));
             }
             $this->content->text = $text;
         }
@@ -116,32 +115,5 @@ class block_eledia_adminexam extends block_base
     public function has_config() {
         return true;
     }
-//    /**
-//     * Defines configuration data.
-//     *
-//     * The function is called immediatly after init().
-//     */
-//    public function specialization() {
-//
-//        // Load user defined title and make sure it's never empty.
-//        if (empty($this->config->title)) {
-//            $this->title = get_string('pluginname', 'block_eledia_adminexam');
-//        } else {
-//            $this->title = $this->config->title;
-//        }
-//    }
 
-//    /**
-//     * Sets the applicable formats for the block.
-//     *
-//     * @return string[] Array of pages and permissions.
-//     */
-//    public function applicable_formats() {
-//        return array(
-//        );
-//    }
-//
-//    function _self_test() {
-//        return true;
-//    }
 }

@@ -44,7 +44,7 @@ class util
         $course = $DB->get_record("course", array("id" => $courseid), '*', MUST_EXIST);
         $coursecontext = \context_course::instance($courseid);
         //$users = get_enrolled_users($coursecontext);
-        $users=$DB->get_records_list('user', 'id', $userids);
+        $users=$DB->get_records_list('user', 'id', $userids, 'lastname,firstname');
         $instances = enrol_get_instances($courseid, true);
         $enrolid = '';
         foreach ($instances as $instance) {
@@ -164,7 +164,7 @@ class util
         global $DB, $CFG;
         require_once($CFG->dirroot . '/blocks/eledia_multikeys/locallib.php');
         $mk = new \eledia_multikeys_service();
-        $length = 4;
+        $length = 6;
 
         $keystable = $DB->get_records('block_eledia_multikeys', array('userid' => null));
         $oldkeys = array();

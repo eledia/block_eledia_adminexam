@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'eLeDia E-Klausur Administration';
 $string['privacy:metadata'] = 'Das eLeDia E-Klausur Administration Block Plugin speichert keine persönlichen Daten.';
-$string['deactivateusers'] = 'Nutzer stilllegen';
+$string['deactivateusers'] = 'Nutzer*in stilllegen';
 $string['archivaldocuments'] = 'Archivdokumente';
 $string['backtocourse'] = 'Zurück zum Kurs';
 $string['confirmdeactivateusers'] = 'Der Status der eingeschriebener Teilnehmer/innen des Kurses \'{$a->course}\' ausschließlich mit der Rolle \'{$a->roles}\' wird auf \'Inaktiv\' gesetzt.';
@@ -42,18 +42,19 @@ $string['createlabels'] = 'Etiketten erzeugen';
 $string['confirmcreatelabels'] = 'Die druckbaren Etiketten als PDF-Datei werden heruntergeladen für \'{$a->course}\'';
 $string['noticecreatelabels'] = 'Die druckbaren Etiketten als PDF-Datei wurden heruntergeladen für \'{$a->course}\'';
 $string['pdfsubject'] = 'Etiketten';
-$string['assessment_participationlist'] = 'Erstellung Teilnahmeliste';
+$string['assessment_participationlist'] = 'Teinahmeliste erzeugen';
 $string['confirmparticipationlist'] = 'Erstellung und Archivierung der Teilnahmeliste als PDF-Datei für \'{$a->course}\'';
 $string['noticeparticipationlist'] = 'Der Erstellungsprozess der Teilnahmeliste für \'{$a->course}\' war erfolgreich.';
-$string['coursebackup'] = 'Kurs-Sicherung';
+$string['coursebackup'] = 'Kurssicherung';
 $string['confirmcoursebackup'] = 'Erstellung und Archivierung einer Kurs-Sicherung für \'{$a->course}\'';
 $string['noticecoursebackup'] = 'Der Erstellungsprozess einer Kurs-Sicherung für \'{$a->course}\' war erfolgreich.';
-$string['createuser'] = 'Nutzer/in anlegen';
+$string['createuser'] = 'Nutzer*in anlegen';
 $string['download_labels'] = 'Etiketten herunterladen (PDF)';
-$string['confirm_header'] = 'Etiketten';
+$string['confirm_header'] = 'Etiketten erzeugen';
 $string['select_groups'] = 'Kurs-Gruppe: ';
-$string['checkuser'] = 'Nutzer/in prüfen';
+$string['checkuser'] = 'Nutzer*in prüfen';
 $string['emptylabels'] = 'Anzahl leerer Etiketten';
+$string['uploadusers'] = 'Nutzerliste hochladen';
 
 
 
