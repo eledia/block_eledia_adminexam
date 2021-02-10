@@ -24,7 +24,7 @@ require('../../config.php');
 
 global $USER, $CFG, $PAGE, $OUTPUT, $DB;
 require_once($CFG->dirroot . '/enrol/externallib.php');
-require_once('createlabels_form.php');
+
 $context = context_system::instance();
 
 require_login();
@@ -48,7 +48,7 @@ $PAGE->set_context($context);
 $PAGE->set_title(get_string('createlabels', 'block_eledia_adminexam'));
 $PAGE->set_pagelayout('course');
 
-$mform = new createlabels_form(null, array('courseid' => $courseid));
+$mform = new \block_eledia_adminexam\forms\createindividuallabels_form(null, array('courseid' => $courseid));
 
 // Execute the form.
 if ($mform->is_cancelled()) {
@@ -61,7 +61,7 @@ if ($mform->is_cancelled()) {
 
     if ($createlabels) {
 
-        block_eledia_adminexam\util::download_labels_pdf($courseid, $group,$emptylabels,unserialize($userids));
+        block_eledia_adminexam\util::download_labels_pdf($courseid, $group, $emptylabels, unserialize($userids));
 
     } else if ($noticecreatelabels) {
 
@@ -71,11 +71,11 @@ if ($mform->is_cancelled()) {
         echo $OUTPUT->header();
 
         echo $OUTPUT->box_start('generalbox');
-
-        $params = ['createlabels' => 1, 'courseid' => $courseid, 'group' => $group, 'emptylabels' => $emptylabels, 'userids' => serialize($formdata->userids)];
+        $users[$group] = $formdata->userids;
+        $params = ['createlabels' => 1, 'courseid' => $courseid, 'group' => $group, 'emptylabels' => $emptylabels, 'userids' => serialize($users)];
         $url = new moodle_url($PAGE->url, $params);
         $downloadbutton = new single_button($url, get_string('download_labels', 'block_eledia_adminexam'), 'post');
-        $cancelbutton = new single_button(new moodle_url('/course/view.php', array('id' => $courseid)), get_string('cancel'),'get');
+        $cancelbutton = new single_button(new moodle_url('/course/view.php', array('id' => $courseid)), get_string('cancel'), 'get');
         echo $OUTPUT->confirm($message, $downloadbutton, $cancelbutton);
 
     } else {

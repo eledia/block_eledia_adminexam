@@ -70,12 +70,16 @@ class block_eledia_adminexam extends block_base
         } else {
             $text = '';
             if (has_capability('moodle/site:config', context_system::instance())) {
-                $struploadusersbutton = get_string('uploadusers', 'block_eledia_adminexam');
-                $uploadusersurl = new \moodle_url('/admin/tool/uploaduser/index.php');
-                $text = html_writer::link($uploadusersurl, $struploadusersbutton, array('target' => '_blank','class' => 'btn btn-primary w-100 mb-2'));
+//                $struploadusersbutton = get_string('uploadusers', 'block_eledia_adminexam');
+//                $uploadusersurl = new \moodle_url('/admin/tool/uploaduser/index.php');
+//                $text = html_writer::link($uploadusersurl, $struploadusersbutton, array('target' => '_blank','class' => 'btn btn-primary w-100 mb-2'));
+
+                $strcreatelabelsbutton = get_string('uploadcsvcreatelabels', 'block_eledia_adminexam');
+                $createlabelsurl = new \moodle_url('/blocks/eledia_adminexam/createlabelscsv.php', array('courseid' => $this->page->course->id));
+                $text .= html_writer::link($createlabelsurl, $strcreatelabelsbutton, array('class' => 'btn btn-primary w-100 mb-2'));
 
                 $strcreatelabelsbutton = get_string('createlabels', 'block_eledia_adminexam');
-                $createlabelsurl = new \moodle_url('/blocks/eledia_adminexam/createlabels.php', array('courseid' => $this->page->course->id));
+                $createlabelsurl = new \moodle_url('/blocks/eledia_adminexam/createindividuallabels.php', array('courseid' => $this->page->course->id));
                 $text .= html_writer::link($createlabelsurl, $strcreatelabelsbutton, array('class' => 'btn btn-primary w-100 mb-2'));
 
                 $strcheckuserbutton = get_string('checkuser', 'block_eledia_adminexam');

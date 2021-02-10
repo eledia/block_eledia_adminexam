@@ -37,14 +37,16 @@ class util
      * @param array $data labels data.
      * @return string Labels as pdf string.
      */
-    public static function download_labels_pdf($courseid, $groupid, $emptylabels,$userids)
+    public static function download_labels_pdf($courseid, $groupid, $emptylabels, $userids)
     {
         global $DB, $CFG;
         require_once("$CFG->libdir/pdflib.php");
+        require_once($CFG->dirroot . '/enrol/externallib.php');
+        require_once($CFG->dirroot . '/enrol/elediamultikeys/lib.php');
+
         $course = $DB->get_record("course", array("id" => $courseid), '*', MUST_EXIST);
         $coursecontext = \context_course::instance($courseid);
-        //$users = get_enrolled_users($coursecontext);
-        $users=$DB->get_records_list('user', 'id', $userids, 'lastname,firstname');
+
         $instances = enrol_get_instances($courseid, true);
         $enrolid = '';
         foreach ($instances as $instance) {
@@ -55,35 +57,50 @@ class util
         }
 
         if (empty($enrolid)) {
-            print_error(' there is no enrol elediamultikeys in this course');
+            $studentrole = $DB->get_record('role', array('shortname' => 'student'));
+            $enrolmultikeys = new \enrol_elediamultikeys_plugin();
+            $enrolid = $enrolmultikeys->add_instance($course, array('status' => ENROL_INSTANCE_ENABLED,
+                'name' => get_string('instancename_enrolelediamultikeys','block_eledia_adminexam'),
+                'roleid' => $studentrole->id , 'customint4'=> 0));
         }
-        $groups = groups_get_all_groups($course->id);
-        $groupname = $groups[$groupid]->name;
-        $content_html =
-            '<h2>' .get_string('pdfsubject', 'block_eledia_adminexam') . '</h2>
-            <br><h3>Klausur: ' . $course->shortname . ', Gruppe: ' . $groupname . ', ' . date('d.m.Y H:i', time())
-            . '</h3>
-            <div><table cellspacing="0" cellpadding="10" border="1" style="font-weight: bold;">';
-        foreach ($users as $user) {
-            $roles = array_column(get_user_roles($coursecontext, $user->id, true), 'shortname');
-            if (!is_siteadmin($user) && (count(array_diff($roles, ['student']))) === 0) {
-               // $groups = groups_get_all_groups($course->id, $user);
-               // if (array_key_exists($groupid, $groups)) {
-                    $keylist = self::create_keylist($enrolid, 1, $groupid);
-                    $content_html .= self::get_labels_content_table($user, $course, $groupname, $keylist[0]);
-               // }
-            }
-        }
-        $content_html .= '</table></div>';
 
-        if (!empty($emptylabels)) {
-            $content_html .= '<hr><h2>Leere ' . get_string('pdfsubject', 'block_eledia_adminexam')
-                . '</h2><div><table cellspacing="0" cellpadding="10" border="0" style="font-weight: bold;">';
-            $keylist = self::create_keylist($enrolid, $emptylabels, $groupid);
-            for ($i = 0; $i < $emptylabels; $i++) {
-                $content_html .= self::get_labels_content_table(null, $course, $groupname, $keylist[$i]);
+        $groups = groups_get_all_groups($course->id);
+
+        $content_html =
+            '<h1>' . get_string('pdfsubject', 'block_eledia_adminexam') . '</h1>
+            <br><h2>Klausur: ' . $course->shortname . ' ' . date('d.m.Y H:i', time())
+            . '</h2>';
+
+
+        foreach ($userids as $group => $useridsitem) {
+            if (empty($groupid) || $groupid == $group) {
+                $groupname = $groups[$group]->name;
+                $users = $DB->get_records_list('user', 'id', $useridsitem, 'lastname,firstname');
+                $content_html .= !empty($group) ? '<p>&nbsp;</p><hr><p>&nbsp;</p><h3>Gruppe: ' . $groupname . '</h3>' : '<p>&nbsp;</p>';
+                $content_html .= '<div><table cellspacing="0" cellpadding="10" border="1" style="font-weight: bold;">';
+                foreach ($users as $user) {
+                    $roles = array_column(get_user_roles($coursecontext, $user->id, true), 'shortname');
+                    if (!is_siteadmin($user) && (count(array_diff($roles, ['student']))) === 0) {
+                        // $groups = groups_get_all_groups($course->id, $user);
+                        // if (array_key_exists($groupid, $groups)) {
+                        $keylist = self::create_keylist($enrolid, 1, $group);
+                        $content_html .= self::get_labels_content_table($user, $course, $groupname, $keylist[0]);
+                        // }
+                    }
+                }
+                $content_html .= '</table></div>';
+
+                if (!empty($emptylabels)) {
+                    $content_html .= '<h3>Leere ' . get_string('pdfsubject', 'block_eledia_adminexam');
+                    $content_html .= !empty($group) ? ' Gruppe: ' . $groupname : '';
+                    $content_html .= '</h3><div><table cellspacing="0" cellpadding="10" border="0" style="font-weight: bold;">';
+                    $keylist = self::create_keylist($enrolid, $emptylabels, $group);
+                    for ($i = 0; $i < $emptylabels; $i++) {
+                        $content_html .= self::get_labels_content_table(null, $course, $groupname, $keylist[$i]);
+                    }
+                    $content_html .= '</table></div>';
+                }
             }
-            $content_html .= '</table></div>';
         }
         // Create new PDF document.
         $pdf = new \TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -116,8 +133,8 @@ class util
         $pdf->SetFont('helvetica', '', 10);
 
         $pdf->writeHTML($content_html, true, false, true, false, '');
-
-        $filename = get_string('pdfsubject', 'block_eledia_adminexam') . '_' . $course->shortname . '_' . $groupname . '_' . date('YmdHis', time()) . '.pdf<';
+        $groupname = !empty($groupid) ? '_' . $groups[$groupid]->name : '';
+        $filename = get_string('pdfsubject', 'block_eledia_adminexam') . '_' . $course->shortname . $groupname . '_' . date('YmdHis', time()) . '.pdf<';
 
         ob_end_clean();
         $filecontents = $pdf->Output($filename, 'D');
@@ -144,15 +161,15 @@ class util
           <div>Passwort: ' . $password . '</div>';
         } else {
             $html .= '<div>&nbsp;</div>
-            <div>Passwort:</div>';
+            <div>&nbsp;</div>';
         }
 
-        $html .= '</td><td style="width: 33%;border:1px solid #333;"><div>Klausur: ' . $course->shortname . '</div>
+        $html .= '</td><td style="width: 33%;border:1px solid #333;"><div style="height: 3em;">Klausur: ' . $course->shortname . '</div>
           <div>Vouchercode: ' . $key . '</div>
         </td>
-         <td  style="width: 33%;border:1px solid #333;">Gruppe: ' . $group . '</td>
-        </tr>
-        ';
+         <td  style="width: 33%;border:1px solid #333;">';
+        $html .= !empty($group) ? 'Gruppe: ' . $group : '';
+        $html .= '</td></tr>';
 
         return $html;
     }
@@ -386,6 +403,142 @@ class util
 
         fwrite($fileHandle, $pdf->output($filename, 'S'));
         fclose($fileHandle);
+    }
+
+    public static function import_file($courseid, $delimiter, \stored_file $import_file)
+    {
+        global $DB, $CFG, $PAGE;
+        require_once($CFG->dirroot . '/user/lib.php');
+        require_once($CFG->dirroot . '/group/lib.php');
+        require_once($CFG->libdir . '/csvlib.class.php');
+
+        $iid = \csv_import_reader::get_new_iid('createlabels');
+        $csvimport = new \csv_import_reader($iid, 'createlabels');
+
+        $readcount = $csvimport->load_csv_content($import_file->get_content(), 'utf-8', $delimiter);
+
+        if ($readcount === false) {
+            print_error('csvfileerror', 'error', $PAGE->url, $csvimport->get_error());
+        } else if ($readcount == 0) {
+            print_error('csvemptyfile', 'error', $PAGE->url, $csvimport->get_error());
+        } else if ($readcount == 1) {
+            print_error('csvnodata', 'error', $PAGE->url);
+        }
+
+        $csvimport->init();
+
+        // make arrays of valid fields for error checking.
+        $required['username'] = 1;
+        $required['firstname'] = 1;
+        $required['lastname'] = 1;
+
+        $optional['gruppe'] = 1;
+        $optional['email'] = 1;
+
+        $text = $import_file->get_content();
+        $text = preg_replace('!\r\n?!', "\n", $text);
+
+        $rawlines = explode("\n", $text);
+
+        unset($text);
+
+        $header = explode($csvimport::get_delimiter($delimiter), array_shift($rawlines));
+
+        // check for valid field names
+        foreach ($header as $i => $h) {
+            $h = strtolower(trim($h));
+            $header[$i] = $h;
+            if (!(isset($required[$h]) || isset($optional[$h]))) {
+                print_error('invalidfieldname', 'error', $PAGE->url, $h);
+            }
+            if (isset($required[$h])) {
+                $required[$h] = 2;
+            }
+        }
+        // check for required fields
+        foreach ($required as $key => $value) {
+            if ($value < 2) {
+                print_error('fieldrequired', 'error', $PAGE->url, $key);
+            }
+        }
+
+        if (!$existing_groups = groups_get_all_groups($courseid)) {
+            $existing_groups = array();
+        }
+
+        $users = array();
+        $new_group = null;
+
+        $line_num = 1;
+        while ($line = $csvimport->next()) {
+            $line_num++;
+
+            foreach ($line as $key => $value) {
+                $record[$header[$key]] = trim($value);
+            }
+
+            // Clean these up for each iteration
+            unset($new_group);
+
+            // Set the user data.
+            $user = new \stdClass();
+            $user->username = $record['username'];
+            $user->firstname = $record['firstname'];
+            $user->lastname = $record['lastname'];
+            $user->email = isset($record['email']) ? $record['email'] : $record['username'] . '@scl.uni-kassel.local';
+            $user->suspended = 0;
+            $user->confirmed = 1;
+            $user->mnethostid = 1;
+            $user->maildisplay = 0;
+
+            $group_name = isset($record['gruppe']) ? $record['gruppe'] : '';
+
+            if ($olduser = $DB->get_record('user', array('username' => $user->username, 'deleted' => 0))) {
+                $user->id = $olduser->id;
+                user_update_user($user);
+                $user->auth = $olduser->auth;
+            } else {
+                $user->auth = 'manual';
+                $user->id = user_create_user($user, false, true);
+            }
+
+            $assign_group_id = 0;
+            $assign_group_name = '';
+
+            if (!empty($group_name)) {
+
+                // If no group pre-selected, see if group from import already
+                // created for that course
+
+                foreach ($existing_groups as $existing_group) {
+                    if ($existing_group->name == $group_name) {
+                        $assign_group_id = $existing_group->id;
+                        $assign_group_name = $existing_group->name;
+                        break;
+                    }
+                }
+
+                // No group by that name
+                if ($assign_group_id == 0) {
+
+                    // Make a new group for this course
+                    $new_group = new \stdClass();
+                    $new_group->name = addslashes($group_name);
+                    $new_group->courseid = $courseid;
+                    if (!$assign_group_id = groups_create_group($new_group)) {
+                        throw new \moodle_exception(sprintf(get_string('error_create_group', 'block_eledia_adminexam'), $line_num, $group_name));
+                    } else {
+                        $new_group->name =
+                        $assign_group_name = stripslashes($new_group->name);
+                        $new_group->id = $assign_group_id;
+                        $existing_groups[] = $new_group;
+                    }
+                }
+            }
+            $users[$assign_group_id][] = $user->id;
+        }
+
+        return $users;
     }
 }
 

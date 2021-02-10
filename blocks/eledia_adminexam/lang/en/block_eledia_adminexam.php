@@ -39,6 +39,7 @@ $string['loggedquestionsteps'] = 'Logged question steps';
 $string['configurablereportsid_questionsteps'] = 'ID for logged question steps';
 $string['configurablereportsid_questionsteps_desc'] = 'Please enter the ID of the configurable report in which the logged steps of the questions are displayed.';
 $string['createlabels'] = 'Create labels';
+$string['uploadcsvcreatelabels'] = 'Create individual labels';
 $string['confirmcreatelabels'] = 'The printable labels as PDF files will be downloaded for \'{$a->course}\'';
 $string['noticecreatelabels'] = 'The printable labels as a PDF file have been downloaded for \'{$a->course}\'';
 $string['pdfsubject'] = 'Labels';
@@ -55,3 +56,17 @@ $string['select_groups'] = 'Course group:';
 $string['checkuser'] = 'Check user';
 $string['emptylabels'] = 'Number of empty labels';
 $string['uploadusers'] = 'Upload user list';
+$string['uploadcsv_header'] = 'Upload user list as csv file';
+$string['uploadcsv_help'] = 'Upload user list as csv file';
+$string['error_pattern_match'] = "Line %u: Unable to parse the line contents '%s'\n";
+$string['import_successful'] = 'User import successful';
+$string['no_file'] = 'No file was selected for import';
+$string['error_create_group'] = "Line %u: Unable to create group '%s'\n";
+$string['instancename_enrolelediamultikeys'] = 'Voucher code enrollment';
+$string['csvdelimiter'] = 'CSV delimiter';
+$string['csvdelimiter_help'] = 'CSV delimiter of the CSV file.';
+$string['examplecsv'] = 'Example CSV file';
+$string['examplecsv_help'] = 'To use the example CSV file, download it and open it with a text or spreadsheet editor. Leave the first line unchanged, edit the following lines (records), add your user data and add more lines if necessary. Save the file as a CSV and upload it.
+The fields \'username\', \'firstname\' and \'lastname\' are required.
+The fields \'email\' and \'gruppe\' are optional. The field \'username\' contains the matriculation number, the e-mail address can be generated automatically. \'gruppe\' can contain the name of a course group - if this or the user does not exist, it will be created, also a voucher code course enrol instance.';
+

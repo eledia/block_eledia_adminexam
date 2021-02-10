@@ -23,11 +23,12 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-$plugin->version = 2021020400;
+$plugin->version = 2021020900;
 $plugin->requires = 2015111000;
 $plugin->component = 'block_eledia_adminexam';
 $plugin->dependencies = array(
     'local_quizattemptexport_kassel' => 2020120300,
     'report_eledia_assessment' => 2020110500,
     'block_eledia_multikeys' => 2020090200,
+    'enrol_elediamultikeys' => 2020090200,
 );

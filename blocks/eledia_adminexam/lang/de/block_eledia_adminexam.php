@@ -38,7 +38,8 @@ $string['deactivateusers_roles'] = 'Ausschließlich für eingeschriebener Teilne
 $string['loggedquestionsteps'] = 'Protokollierte Frageschritte';
 $string['configurablereportsid_questionsteps'] = 'ID für Protokollierte Frageschritte';
 $string['configurablereportsid_questionsteps_desc'] = 'Bitte geben Sie die ID des konfigurierbaren Berichts ein, in dem die protokollierten Schritte der Fragen angezeigt werden.';
-$string['createlabels'] = 'Etiketten erzeugen';
+$string['createlabels'] = 'Einzelne Etiketten erzeugen';
+$string['uploadcsvcreatelabels'] = 'Etiketten erzeugen';
 $string['confirmcreatelabels'] = 'Die druckbaren Etiketten als PDF-Datei werden heruntergeladen für \'{$a->course}\'';
 $string['noticecreatelabels'] = 'Die druckbaren Etiketten als PDF-Datei wurden heruntergeladen für \'{$a->course}\'';
 $string['pdfsubject'] = 'Etiketten';
@@ -55,6 +56,20 @@ $string['select_groups'] = 'Kurs-Gruppe: ';
 $string['checkuser'] = 'Nutzer*in prüfen';
 $string['emptylabels'] = 'Anzahl leerer Etiketten';
 $string['uploadusers'] = 'Nutzerliste hochladen';
+$string['uploadcsv_header'] = 'Nutzerliste als CSV-Datei hochladen';
+$string['uploadcsv_help'] = 'Nutzerliste als CSV-Datei hochladen';
+$string['error_pattern_match'] = "Zeile %u: Zeileninhalt '%s' kann nicht analysiert werden\n";
+$string['import_successful'] = 'Benutzerimport erfolgreich';
+$string['no_file'] = 'Es wurde keine Datei für den Import ausgewählt';
+$string['error_create_group'] = "Zeile %u: Gruppe '%s' kann nicht erstellt werden \ n";
+$string['instancename_enrolelediamultikeys'] = 'Vouchercode Einschreibung';
+$string['csvdelimiter'] = 'CSV-Trennzeichen';
+$string['csvdelimiter_help'] = 'CSV-Trennzeichen der CSV-Datei.';
+$string['examplecsv'] = 'CSV-Beispieldatei';
+$string['examplecsv_help'] = 'Um die Beispieldatei zu verwenden, laden Sie sie herunter und öffnen Sie sie mit einem Text- oder Tabellenkalkulationseditor. Lassen Sie die erste Zeile unverändert, bearbeiten Sie die folgenden Zeilen (Datensätze), fügen Sie Ihre Benutzerdaten hinzu und fügen Sie bei Bedarf weitere Zeilen hinzu. Speichern Sie die Datei als CSV und laden Sie sie hoch.
+Die Felder \'username\', \'firstname\' und \'lastname\' sind erforderlich.
+Die Felder \'email\' und \'gruppe\' sind optional. Das Feld \'username\' enthält die Matrikelnummer, die E-Mail-Adresse kann automatisch generiert werden. \'gruppe\' kann den Namen einer Kursgruppe enthalten. Wenn diese oder der Benutzer nicht vorhanden ist, wird sie erstellt, und ebenfalls eine Instanz der Kurscode-Einschreibung.';
+
 
 
 
