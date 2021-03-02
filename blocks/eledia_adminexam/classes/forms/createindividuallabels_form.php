@@ -67,7 +67,7 @@ class createindividuallabels_form extends \moodleform
         $userlist = [];
         $coursecontext = \context_course::instance($courseid);
         foreach ($users as $id => $user) {
-            if (is_int($user->username)) {
+            if (is_numeric($user->username)) {
                 $roles = array_column(get_user_roles($coursecontext, $user->id, true), 'shortname');
                 if ($user->id > 2 && !is_siteadmin($user) && (count(array_diff($roles, ['student']))) === 0) {
                     $userfields = get_object_vars($user);
