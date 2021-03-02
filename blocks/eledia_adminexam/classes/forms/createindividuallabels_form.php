@@ -57,7 +57,6 @@ class createindividuallabels_form extends \moodleform
         $sql = "SELECT id, username, lastname,firstname
                   FROM {user} 
                  WHERE deleted = ?
-                       AND concat('',username * 1) = username
                   ORDER BY lastname, firstname";
 
         $params = [
@@ -68,11 +67,13 @@ class createindividuallabels_form extends \moodleform
         $userlist = [];
         $coursecontext = \context_course::instance($courseid);
         foreach ($users as $id => $user) {
-            $roles = array_column(get_user_roles($coursecontext, $user->id, true), 'shortname');
-            if ($user->id > 2 && !is_siteadmin($user) && (count(array_diff($roles, ['student']))) === 0) {
-                $userfields = get_object_vars($user);
-                array_shift($userfields);
-                $userlist[$id] = implode(', ', $userfields);
+            if (is_int($user->username)) {
+                $roles = array_column(get_user_roles($coursecontext, $user->id, true), 'shortname');
+                if ($user->id > 2 && !is_siteadmin($user) && (count(array_diff($roles, ['student']))) === 0) {
+                    $userfields = get_object_vars($user);
+                    array_shift($userfields);
+                    $userlist[$id] = implode(', ', $userfields);
+                }
             }
         }
 
