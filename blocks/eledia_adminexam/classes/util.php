@@ -300,7 +300,11 @@ class util
             throw new \moodle_exception("Error: No admin account was found");
         }
         set_time_limit(0);
-        $bc = new \backup_controller(\backup::TYPE_1COURSE, $course->id, \backup::FORMAT_MOODLE,
+        raise_memory_limit(MEMORY_EXTRA);
+        $io=exec("/usr/bin/php $CFG->dirroot/admin/cli/backup.php --courseid=$course->id --destination=$path");
+
+        
+        /*$bc = new \backup_controller(\backup::TYPE_1COURSE, $course->id, \backup::FORMAT_MOODLE,
             \backup::INTERACTIVE_YES, \backup::MODE_GENERAL, $admin->id);
         // Set the default filename.
         $format = $bc->get_format();
@@ -325,7 +329,7 @@ class util
             }
         }
 
-        $bc->destroy();
+        $bc->destroy();*/
     }
 
     public
