@@ -299,9 +299,9 @@ class util
         if (!$admin) {
             throw new \moodle_exception("Error: No admin account was found");
         }
-        set_time_limit(0);
+        //set_time_limit(0);
         raise_memory_limit(MEMORY_EXTRA);
-        $io=exec("/usr/bin/php $CFG->dirroot/admin/cli/backup.php --courseid=$course->id --destination=$path");
+        exec("/usr/bin/php $CFG->dirroot/admin/cli/backup.php --courseid=$course->id --destination=$path > /dev/null &");
 
         
         /*$bc = new \backup_controller(\backup::TYPE_1COURSE, $course->id, \backup::FORMAT_MOODLE,
