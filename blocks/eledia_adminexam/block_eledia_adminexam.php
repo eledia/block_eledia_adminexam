@@ -104,17 +104,16 @@ class block_eledia_adminexam extends block_base
 
                 $coursebackupstate = (array)unserialize(get_config('block_eledia_adminexam', 'coursebackupstate'));
                 $processbackup = !empty($coursebackupstate[$this->page->course->id]->backupprocessstate) ? 1 : 0;
-                $backupcount = !empty($coursebackupstate[$this->page->course->id]->backupcount)? $coursebackupstate[$this->page->course->id]->backupcount : 0;
+                $backupcount = !empty($coursebackupstate[$this->page->course->id]->backupcount) ? $coursebackupstate[$this->page->course->id]->backupcount : 0;
 
                 $noticesuccessbackuparr = (array)unserialize(get_user_preferences('noticesuccessbackup', '', $USER->id));
-                $noticesuccessbackup = (in_array($this->page->course->id, $noticesuccessbackuparr)) ? 1 : 0;
 
-                if ($noticesuccessbackup) {
-                    unset($noticesuccessbackuparr[array_search($this->page->course->id, $noticesuccessbackuparr)]);
-                    set_user_preference('noticesuccessbackup', serialize($noticesuccessbackuparr), $USER->id);
+                if (!empty($noticesuccessbackuparr[$this->page->course->id]) && ($noticesuccessbackuparr[$this->page->course->id] === $USER->id)) {
                     $coursename = $DB->get_record('course', array('id' => $this->page->course->id), 'fullname', MUST_EXIST)->fullname;
                     \core\notification::success(get_string('noticecoursebackup', 'block_eledia_adminexam',
                         ['course' => $coursename]));
+                    unset($noticesuccessbackuparr[$this->page->course->id]);
+                    set_user_preference('noticesuccessbackup', serialize($noticesuccessbackuparr), $USER->id);
                 }
 
                 $strcoursebackupbutton = get_string('coursebackup', 'block_eledia_adminexam')

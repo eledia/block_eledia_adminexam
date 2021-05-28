@@ -277,7 +277,7 @@ class util
     public
     static function coursebackup($course)
     {
-        global $CFG;
+        global $CFG,$USER;
         require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
 
         $exportdir = get_config('local_quizattemptexport_kassel', 'pdfexportdir');
@@ -310,6 +310,7 @@ class util
             $coursebackupstate[$course->id] = new \stdClass();
         }
         $coursebackupstate[$course->id]->backupprocessstate = true;
+        $coursebackupstate[$course->id]->userid = $USER->id;
         set_config('coursebackupstate', serialize($coursebackupstate), 'block_eledia_adminexam');
 
 

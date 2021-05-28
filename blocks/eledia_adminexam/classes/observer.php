@@ -39,16 +39,19 @@ class eledia_adminexam_coursebackup_observer
         $data = $event->get_data();
 
         $coursebackupstate = (array)unserialize(get_config('block_eledia_adminexam', 'coursebackupstate'));
-        $backupprocessstate = !empty($coursebackupstate[$data['courseid']]->backupprocessstate) ? 1 : 0;
 
-        if ($backupprocessstate) {
-            $coursebackupstate[$data['courseid']]->backupprocessstate = false;
-            $backupcount = $coursebackupstate[$data['courseid']]->backupcount;
-            $coursebackupstate[$data['courseid']]->backupcount = !empty($backupcount) ? ++$backupcount : 1;
-            set_config('coursebackupstate', serialize($coursebackupstate), 'block_eledia_adminexam');
+        if (!empty($coursebackupstate[$data['courseid']]->backupprocessstate)) {
+            $backupstate = $coursebackupstate[$data['courseid']];
+
             $noticesuccessbackup = (array)unserialize(get_user_preferences('noticesuccessbackup', '', $data['userid']));
-            array_push($noticesuccessbackup, $data['courseid']);
-            set_user_preference('noticesuccessbackup', serialize($noticesuccessbackup), $data['userid']);
+            $noticesuccessbackup[$data['courseid']] = $backupstate->userid;
+            set_user_preference('noticesuccessbackup', serialize($noticesuccessbackup), $backupstate->userid);
+
+            $backupstate->backupcount = !empty($backupstate->backupcount) ? ++$backupstate->backupcount : 1;
+            $backupstate->backupprocessstate = false;
+            $backupstate->userid = null;
+            $coursebackupstate[$data['courseid']] = $backupstate;
+            set_config('coursebackupstate', serialize($coursebackupstate), 'block_eledia_adminexam');
         }
     }
 }
