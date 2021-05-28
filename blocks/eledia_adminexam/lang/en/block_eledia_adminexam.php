@@ -49,6 +49,7 @@ $string['noticeparticipationlist'] = 'The process of creating the participation 
 $string['coursebackup'] = 'Course backup';
 $string['confirmcoursebackup'] = 'Creation and archiving a course backup for \'{$a->course}\'';
 $string['noticecoursebackup'] = 'The process of creating a course backup for \'{$a->course}\' was successful.';
+$string['noticeprocesscoursebackup'] = 'The process of creating a course backup for \'{$a->course}\' has started.';
 $string['createuser'] = 'Add a new user';
 $string['download_labels'] = 'Download labels (PDF)';
 $string['confirm_header'] = 'Labels';
@@ -69,4 +70,4 @@ $string['examplecsv'] = 'Example CSV file';
 $string['examplecsv_help'] = 'To use the example CSV file, download it and open it with a text or spreadsheet editor. Leave the first line unchanged, edit the following lines (records), add your user data and add more lines if necessary. Save the file as a CSV and upload it.
 The fields \'username\', \'firstname\' and \'lastname\' are required.
 The fields \'email\' and \'gruppe\' are optional. The field \'username\' contains the matriculation number, the e-mail address can be generated automatically. \'gruppe\' can contain the name of a course group - if this or the user does not exist, it will be created, also a voucher code course enrol instance.';
-
+$string['executecoursebackup'] ='in progress ...';

@@ -54,7 +54,7 @@ if ($coursebackup) {
 
     echo $OUTPUT->box_start('generalbox');
     notice('<div style="text-align:center">'
-        . get_string('noticecoursebackup', 'block_eledia_adminexam', ['course' => $course->shortname])
+        . get_string('noticeprocesscoursebackup', 'block_eledia_adminexam', ['course' => $course->shortname])
         . '</div>', new moodle_url('/course/view.php', array('id' => $courseid)));
 
 } else {

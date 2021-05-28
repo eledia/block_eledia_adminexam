@@ -49,6 +49,7 @@ $string['noticeparticipationlist'] = 'Der Erstellungsprozess der Teilnahmeliste 
 $string['coursebackup'] = 'Kurssicherung';
 $string['confirmcoursebackup'] = 'Erstellung und Archivierung einer Kurs-Sicherung für \'{$a->course}\'';
 $string['noticecoursebackup'] = 'Der Erstellungsprozess einer Kurs-Sicherung für \'{$a->course}\' war erfolgreich.';
+$string['noticeprocesscoursebackup'] = 'Der Erstellungsprozess einer Kurs-Sicherung für \'{$a->course}\' wurde gestartet.';
 $string['createuser'] = 'Nutzer*in anlegen';
 $string['download_labels'] = 'Etiketten herunterladen (PDF)';
 $string['confirm_header'] = 'Etiketten erzeugen';
@@ -69,6 +70,8 @@ $string['examplecsv'] = 'CSV-Beispieldatei';
 $string['examplecsv_help'] = 'Um die Beispieldatei zu verwenden, laden Sie sie herunter und öffnen Sie sie mit einem Text- oder Tabellenkalkulationseditor. Lassen Sie die erste Zeile unverändert, bearbeiten Sie die folgenden Zeilen (Datensätze), fügen Sie Ihre Benutzerdaten hinzu und fügen Sie bei Bedarf weitere Zeilen hinzu. Speichern Sie die Datei als CSV und laden Sie sie hoch.
 Die Felder \'username\', \'firstname\' und \'lastname\' sind erforderlich.
 Die Felder \'email\' und \'gruppe\' sind optional. Das Feld \'username\' enthält die Matrikelnummer, die E-Mail-Adresse kann automatisch generiert werden. \'gruppe\' kann den Namen einer Kursgruppe enthalten. Wenn diese oder der Benutzer nicht vorhanden ist, wird sie erstellt, und ebenfalls eine Instanz der Kurscode-Einschreibung.';
+$string['executecoursebackup'] ='wird ausgeführt...';
+
 
 
 

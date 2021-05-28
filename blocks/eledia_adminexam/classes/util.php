@@ -60,8 +60,8 @@ class util
             $studentrole = $DB->get_record('role', array('shortname' => 'student'));
             $enrolmultikeys = new \enrol_elediamultikeys_plugin();
             $enrolid = $enrolmultikeys->add_instance($course, array('status' => ENROL_INSTANCE_ENABLED,
-                'name' => get_string('instancename_enrolelediamultikeys','block_eledia_adminexam'),
-                'roleid' => $studentrole->id , 'customint4'=> 0));
+                'name' => get_string('instancename_enrolelediamultikeys', 'block_eledia_adminexam'),
+                'roleid' => $studentrole->id, 'customint4' => 0));
         }
 
         $groups = groups_get_all_groups($course->id);
@@ -301,9 +301,18 @@ class util
         }
         //set_time_limit(0);
         raise_memory_limit(MEMORY_EXTRA);
+        // Execute the course backup in the background.
         exec("/usr/bin/php $CFG->dirroot/admin/cli/backup.php --courseid=$course->id --destination=$path > /dev/null &");
 
-        
+        // Set the backup process state in a config variable to true.
+        $coursebackupstate = (array)unserialize(get_config('block_eledia_adminexam', 'coursebackupstate'));
+        if (!is_object($coursebackupstate[$course->id])) {
+            $coursebackupstate[$course->id] = new \stdClass();
+        }
+        $coursebackupstate[$course->id]->backupprocessstate = true;
+        set_config('coursebackupstate', serialize($coursebackupstate), 'block_eledia_adminexam');
+
+
         /*$bc = new \backup_controller(\backup::TYPE_1COURSE, $course->id, \backup::FORMAT_MOODLE,
             \backup::INTERACTIVE_YES, \backup::MODE_GENERAL, $admin->id);
         // Set the default filename.

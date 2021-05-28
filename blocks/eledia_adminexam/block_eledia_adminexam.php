@@ -48,7 +48,7 @@ class block_eledia_adminexam extends block_base
      */
     public function get_content()
     {
-        global $OUTPUT;
+        global $USER, $DB;
         $config = get_config('block_eledia_adminexam');
 
         if ($this->content !== null) {
@@ -84,11 +84,11 @@ class block_eledia_adminexam extends block_base
 
                 $strcheckuserbutton = get_string('checkuser', 'block_eledia_adminexam');
                 $checkuserurl = new \moodle_url('/admin/user.php');
-                $text .= html_writer::link($checkuserurl, $strcheckuserbutton, array('target' => '_blank','class' => 'btn btn-primary w-100 mb-2'));
+                $text .= html_writer::link($checkuserurl, $strcheckuserbutton, array('target' => '_blank', 'class' => 'btn btn-primary w-100 mb-2'));
 
                 $strcreateuserbutton = get_string('createuser', 'block_eledia_adminexam');
                 $createuserurl = new \moodle_url('/user/editadvanced.php?id=-1');
-                $text .= html_writer::link($createuserurl, $strcreateuserbutton, array('target' => '_blank','class' => 'btn btn-primary w-100 mb-2'));
+                $text .= html_writer::link($createuserurl, $strcreateuserbutton, array('target' => '_blank', 'class' => 'btn btn-primary w-100 mb-2'));
 
                 $strparticipationlistbutton = get_string('assessment_participationlist', 'block_eledia_adminexam');
                 $participationlisturl = new \moodle_url('/blocks/eledia_adminexam/participationlist.php', array('courseid' => $this->page->course->id));
@@ -96,19 +96,37 @@ class block_eledia_adminexam extends block_base
 
                 $strdeactivateusersbutton = get_string('archivaldocuments', 'block_eledia_adminexam');
                 $deactivateusersurl = new \moodle_url('/blocks/eledia_adminexam/fileman', array('courseid' => $this->page->course->id));
-                $text .= html_writer::link($deactivateusersurl, $strdeactivateusersbutton, array('target' => '_blank','class' => 'btn btn-primary w-100 mb-2'));
+                $text .= html_writer::link($deactivateusersurl, $strdeactivateusersbutton, array('target' => '_blank', 'class' => 'btn btn-primary w-100 mb-2'));
 
                 $strdeactivateusersbutton = get_string('deactivateusers', 'block_eledia_adminexam');
                 $deactivateusersurl = new \moodle_url('/blocks/eledia_adminexam/deactivateusers.php', array('courseid' => $this->page->course->id));
                 $text .= html_writer::link($deactivateusersurl, $strdeactivateusersbutton, array('class' => 'btn btn-primary w-100 mb-2'));
 
-                $strcoursebackupbutton = get_string('coursebackup', 'block_eledia_adminexam');
+                $coursebackupstate = (array)unserialize(get_config('block_eledia_adminexam', 'coursebackupstate'));
+                $processbackup = !empty($coursebackupstate[$this->page->course->id]->backupprocessstate) ? 1 : 0;
+                $backupcount = !empty($coursebackupstate[$this->page->course->id]->backupcount)? $coursebackupstate[$this->page->course->id]->backupcount : 0;
+
+                $noticesuccessbackuparr = (array)unserialize(get_user_preferences('noticesuccessbackup', '', $USER->id));
+                $noticesuccessbackup = (in_array($this->page->course->id, $noticesuccessbackuparr)) ? 1 : 0;
+
+                if ($noticesuccessbackup) {
+                    unset($noticesuccessbackuparr[array_search($this->page->course->id, $noticesuccessbackuparr)]);
+                    set_user_preference('noticesuccessbackup', serialize($noticesuccessbackuparr), $USER->id);
+                    $coursename = $DB->get_record('course', array('id' => $this->page->course->id), 'fullname', MUST_EXIST)->fullname;
+                    \core\notification::success(get_string('noticecoursebackup', 'block_eledia_adminexam',
+                        ['course' => $coursename]));
+                }
+
+                $strcoursebackupbutton = get_string('coursebackup', 'block_eledia_adminexam')
+                    . (!empty($backupcount) ? ' (' . $backupcount . ')' : '')
+                    . ($processbackup ? '<br/><small>' . get_string('executecoursebackup', 'block_eledia_adminexam') . '</small>' : '');
                 $coursebackupurl = new \moodle_url('/blocks/eledia_adminexam/coursebackup.php', array('courseid' => $this->page->course->id));
-                $text .= html_writer::link($coursebackupurl, $strcoursebackupbutton, array('class' => 'btn btn-primary w-100 mb-2'));
+                $text .= html_writer::link($coursebackupurl, $strcoursebackupbutton, array('class' => 'btn btn-primary w-100 mb-2 '
+                    . ($processbackup ? 'disabled' : '')));
 
                 $strloggedquestionstepsbutton = get_string('loggedquestionsteps', 'block_eledia_adminexam');
                 $loggedquestionstepsurl = new \moodle_url('/blocks/configurable_reports/viewreport.php',
-                    array('id'=>$config->configurablereportsid_questionsteps, 'courseid' => $this->page->course->id));
+                    array('id' => $config->configurablereportsid_questionsteps, 'courseid' => $this->page->course->id));
                 $text .= html_writer::link($loggedquestionstepsurl, $strloggedquestionstepsbutton, array('class' => 'btn btn-primary w-100 mb-2'));
             }
             $this->content->text = $text;
@@ -116,7 +134,9 @@ class block_eledia_adminexam extends block_base
 
         return $this->content;
     }
-    public function has_config() {
+
+    public function has_config()
+    {
         return true;
     }
 

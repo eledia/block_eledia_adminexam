@@ -1,5 +1,5 @@
 <?php
-// This file is part of Moodle - https://moodle.org/
+// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -10,12 +10,11 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-//
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Observer for adminexam plugin.
  *
  * @package     block_eledia_adminexam
  * @copyright   2021 René Hansen <support@eledia.de>
@@ -23,12 +22,12 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-$plugin->version = 2021052700;
-$plugin->requires = 2015111000;
-$plugin->component = 'block_eledia_adminexam';
-$plugin->dependencies = array(
-    'local_quizattemptexport_kassel' => 2020120300,
-    'report_eledia_assessment' => 2020110500,
-    'block_eledia_multikeys' => 2020090200,
-    'enrol_elediamultikeys' => 2020090200,
+
+$observers = array (
+    array (
+        'eventname' => '\core\event\course_backup_created',
+        'callback'  => 'eledia_adminexam_coursebackup_observer::coursebackup_created',
+        'includefile' => '/blocks/eledia_adminexam/classes/observer.php',
+        'internal'    => false,
+    ),
 );
