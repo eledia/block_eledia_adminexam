@@ -27,8 +27,7 @@ namespace block_eledia_adminexam;
 
 defined('MOODLE_INTERNAL') || die();
 
-class util
-{
+class util {
 
     /**
      * Get the label data as pdf content.
@@ -37,8 +36,7 @@ class util
      * @param array $data labels data.
      * @return string Labels as pdf string.
      */
-    public static function download_labels_pdf($courseid, $groupid, $emptylabels, $userids)
-    {
+    public static function download_labels_pdf($courseid, $groupid, $emptylabels, $userids) {
         global $DB, $CFG;
         require_once("$CFG->libdir/pdflib.php");
         require_once($CFG->dirroot . '/enrol/externallib.php');
@@ -46,6 +44,21 @@ class util
 
         $course = $DB->get_record("course", array("id" => $courseid), '*', MUST_EXIST);
         $coursecontext = \context_course::instance($courseid);
+
+        $exportdir = get_config('local_quizattemptexport_kassel', 'pdfexportdir');
+
+        if (!is_dir($exportdir)) {
+            throw new \moodle_exception('except_dirmissing', 'local_quizattemptexport_kassel', '', $exportdir);
+        }
+
+        $dirname = $course->id;
+        $path = $exportdir . '/' . $dirname . '/';
+
+        if (!is_dir($path)) {
+            if (!mkdir($path)) {
+                throw new \moodle_exception('except_dirnotwritable', 'local_quizattemptexport_kassel', '', $exportdir);
+            }
+        }
 
         $instances = enrol_get_instances($courseid, true);
         $enrolid = '';
@@ -60,23 +73,23 @@ class util
             $studentrole = $DB->get_record('role', array('shortname' => 'student'));
             $enrolmultikeys = new \enrol_elediamultikeys_plugin();
             $enrolid = $enrolmultikeys->add_instance($course, array('status' => ENROL_INSTANCE_ENABLED,
-                'name' => get_string('instancename_enrolelediamultikeys', 'block_eledia_adminexam'),
-                'roleid' => $studentrole->id, 'customint4' => 0));
+                    'name' => get_string('instancename_enrolelediamultikeys', 'block_eledia_adminexam'),
+                    'roleid' => $studentrole->id, 'customint4' => 0));
         }
 
         $groups = groups_get_all_groups($course->id);
 
         $content_html =
-            '<h1>' . get_string('pdfsubject', 'block_eledia_adminexam') . '</h1>
+                '<h1>' . get_string('pdfsubject', 'block_eledia_adminexam') . '</h1>
             <br><h2>Klausur: ' . $course->shortname . ' ' . date('d.m.Y H:i', time())
-            . '</h2>';
-
+                . '</h2>';
 
         foreach ($userids as $group => $useridsitem) {
             if (empty($groupid) || $groupid == $group) {
                 $groupname = $groups[$group]->name;
                 $users = $DB->get_records_list('user', 'id', $useridsitem, 'lastname,firstname');
-                $content_html .= !empty($group) ? '<p>&nbsp;</p><hr><p>&nbsp;</p><h3>Gruppe: ' . $groupname . '</h3>' : '<p>&nbsp;</p>';
+                $content_html .= !empty($group) ? '<p>&nbsp;</p><hr><p>&nbsp;</p><h3>Gruppe: ' . $groupname . '</h3>' :
+                        '<p>&nbsp;</p>';
                 $content_html .= '<div><table cellspacing="0" cellpadding="10" border="1" style="font-weight: bold;">';
                 foreach ($users as $user) {
                     $roles = array_column(get_user_roles($coursecontext, $user->id, true), 'shortname');
@@ -107,8 +120,10 @@ class util
 
         // Set document information.
         $pdf->SetCreator(PDF_CREATOR);
-        $pdf->SetTitle(get_string('pdfsubject', 'block_eledia_adminexam') . ' ' . $course->shortname . ' Gruppe: ' . $groupname . ' ' . date('d.m.Y H:i', time()));
-        $pdf->SetSubject(get_string('pdfsubject', 'block_eledia_adminexam') . ' ' . $course->shortname . ' Gruppe: ' . $groupname . ' ' . date('d.m.Y H:i', time()));
+        $pdf->SetTitle(get_string('pdfsubject', 'block_eledia_adminexam') . ' ' . $course->shortname . ' Gruppe: ' . $groupname .
+                ' ' . date('d.m.Y H:i', time()));
+        $pdf->SetSubject(get_string('pdfsubject', 'block_eledia_adminexam') . ' ' . $course->shortname . ' Gruppe: ' . $groupname .
+                ' ' . date('d.m.Y H:i', time()));
         $pdf->setPrintHeader(false);
         // set header and footer fonts
 
@@ -134,10 +149,21 @@ class util
 
         $pdf->writeHTML($content_html, true, false, true, false, '');
         $groupname = !empty($groupid) ? '_' . $groups[$groupid]->name : '';
-        $filename = get_string('pdfsubject', 'block_eledia_adminexam') . '_' . $course->shortname . $groupname . '_' . date('YmdHis', time()) . '.pdf<';
+        $filename = get_string('pdfsubject', 'block_eledia_adminexam') . '_' . $course->shortname . $groupname . '_' .
+                date('YmdHis', time()) . '.pdf';
 
         ob_end_clean();
+
+        $fileHandle = fopen($path . $filename, 'w');
+        if ($fileHandle === false) {
+            throw new WriterException("Could not open file $path$filename for writing.");
+        }
+
+        fwrite($fileHandle, $pdf->output($filename, 'S'));
+        fclose($fileHandle);
+
         $filecontents = $pdf->Output($filename, 'D');
+
         return $filecontents;
     }
 
@@ -148,8 +174,7 @@ class util
      * @return string Labels as html string.
      */
     public
-    static function get_labels_content_table($user, $course, $group, $key)
-    {
+    static function get_labels_content_table($user, $course, $group, $key) {
         $html = '
         <tr nobr="true"><td style="width: 33%;border:1px solid #333;">';
         if (!empty($user)) {
@@ -174,10 +199,8 @@ class util
         return $html;
     }
 
-
     public
-    static function create_keylist($enrolid, $count, $group)
-    {
+    static function create_keylist($enrolid, $count, $group) {
         global $DB, $CFG;
         require_once($CFG->dirroot . '/blocks/eledia_multikeys/locallib.php');
         $mk = new \eledia_multikeys_service();
@@ -225,15 +248,14 @@ class util
      * @return string Reminder as pdf string.
      */
     public
-    static function get_completion_content_pdf($user, $data)
-    {
+    static function get_completion_content_pdf($user, $data) {
         global $DB, $CFG;
         require_once("$CFG->libdir/pdflib.php");
 
         $content_html = self::get_completion_content_html($user, $data);
         $filename = get_string('pluginname', 'block_eledia_adminexam') .
-            ' Nutzer ' . $user->firstname . ' ' .
-            $user->lastname;
+                ' Nutzer ' . $user->firstname . ' ' .
+                $user->lastname;
         // Create new PDF document.
         $pdf = new \TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
@@ -275,9 +297,8 @@ class util
     }
 
     public
-    static function coursebackup($course)
-    {
-        global $CFG,$USER;
+    static function coursebackup($course) {
+        global $CFG, $USER;
         require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
 
         $exportdir = get_config('local_quizattemptexport_kassel', 'pdfexportdir');
@@ -305,14 +326,13 @@ class util
         exec("/usr/bin/php $CFG->dirroot/admin/cli/backup.php --courseid=$course->id --destination=$path > /dev/null &");
 
         // Set the backup process state in a config variable to true.
-        $coursebackupstate = (array)unserialize(get_config('block_eledia_adminexam', 'coursebackupstate'));
+        $coursebackupstate = (array) unserialize(get_config('block_eledia_adminexam', 'coursebackupstate'));
         if (!is_object($coursebackupstate[$course->id])) {
             $coursebackupstate[$course->id] = new \stdClass();
         }
         $coursebackupstate[$course->id]->backupprocessstate = true;
         $coursebackupstate[$course->id]->userid = $USER->id;
         set_config('coursebackupstate', serialize($coursebackupstate), 'block_eledia_adminexam');
-
 
         /*$bc = new \backup_controller(\backup::TYPE_1COURSE, $course->id, \backup::FORMAT_MOODLE,
             \backup::INTERACTIVE_YES, \backup::MODE_GENERAL, $admin->id);
@@ -343,8 +363,7 @@ class util
     }
 
     public
-    static function save_participationlist_pdf($course)
-    {
+    static function save_participationlist_pdf($course) {
 
         global $CFG;
 
@@ -402,7 +421,6 @@ class util
         $text .= report_eledia_assessment_get_course_overview_body($data);
         $pdf->writeHTML($text, true, false, true, false, '');
 
-
         $fileHandle = fopen($path . $filename, 'w');
         if ($fileHandle === false) {
             throw new WriterException("Could not open file $path$filename for writing.");
@@ -412,8 +430,7 @@ class util
         fclose($fileHandle);
     }
 
-    public static function import_file($courseid, $delimiter, \stored_file $import_file)
-    {
+    public static function import_file($courseid, $delimiter, \stored_file $import_file) {
         global $DB, $CFG, $PAGE;
         require_once($CFG->dirroot . '/user/lib.php');
         require_once($CFG->dirroot . '/group/lib.php');
@@ -533,7 +550,8 @@ class util
                     $new_group->name = addslashes($group_name);
                     $new_group->courseid = $courseid;
                     if (!$assign_group_id = groups_create_group($new_group)) {
-                        throw new \moodle_exception(sprintf(get_string('error_create_group', 'block_eledia_adminexam'), $line_num, $group_name));
+                        throw new \moodle_exception(sprintf(get_string('error_create_group', 'block_eledia_adminexam'), $line_num,
+                                $group_name));
                     } else {
                         $new_group->name =
                         $assign_group_name = stripslashes($new_group->name);
