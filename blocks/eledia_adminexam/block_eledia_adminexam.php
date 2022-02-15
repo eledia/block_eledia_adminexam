@@ -95,7 +95,7 @@ class block_eledia_adminexam extends block_base
                 $text .= html_writer::link($participationlisturl, $strparticipationlistbutton, array('class' => 'btn btn-primary w-100 mb-2'));
 
                 $strdeactivateusersbutton = get_string('archivaldocuments', 'block_eledia_adminexam');
-                $deactivateusersurl = new \moodle_url('/blocks/eledia_adminexam/fileman', array('courseid' => $this->page->course->id));
+                $deactivateusersurl = new \moodle_url('/blocks/eledia_adminexam/elfinder', array('courseid' => $this->page->course->id));
                 $text .= html_writer::link($deactivateusersurl, $strdeactivateusersbutton, array('target' => '_blank', 'class' => 'btn btn-primary w-100 mb-2'));
 
                 $strdeactivateusersbutton = get_string('deactivateusers', 'block_eledia_adminexam');
